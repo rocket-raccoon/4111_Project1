@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}NTSB PLANE CRASH WEB INTERFACE{% endblock %}
+{% block additionalCSS %} 
+    <link rel="stylesheet" href="/static/css/home_page.css">
+{% endblock %}
+{% block content %} 
+  
+  <h3 class="home_header">NTSB CRASH DATA INTERFACE</h3>
+  <table class="nav_panels">
+    <tr>
+      <td><div class="panel">Report an Accident!</div></td>
+      <td><div class="panel">Global Visualizer</div></td>
+      <td><div class="panel">Manufacturer Search</div></td>
+    </tr>
+    <tr>
+      <td><div class="panel">Location Search</div></td>
+      <td><div class="panel">Airplane Search</div></td>
+      <td><div class="panel">Passenger Search</div></td>
+    </tr>
+  </table>
+{% endblock %}
