@@ -3,19 +3,21 @@
 {% block additionalCSS %} 
     <link rel="stylesheet" href="/static/css/home_page.css">
 {% endblock %}
-{% block content %} 
-  
+{% block page_header %}
   <h3 class="home_header">NTSB CRASH DATA INTERFACE</h3>
+{% endblock %}
+{% block content %} 
+  <img class="backdrop" src="/static/img/ntsb1.jpg"></img>
   <table class="nav_panels">
     <tr>
-      <td><div class="panel">Report an Accident!</div></td>
-      <td><div class="panel">Global Visualizer</div></td>
-      <td><div class="panel">Manufacturer Search</div></td>
+      <td><div class="panel"><a href="/reporter">Report an Accident!</a></div></td>
+      <td><div class="panel"><a href="/mapper">Crash Mapper</a></div></td>
+      <td><div class="panel"><a href="/time_search_form">Search by Date</a></div></td>
     </tr>
     <tr>
-      <td><div class="panel">Location Search</div></td>
-      <td><div class="panel">Airplane Search</div></td>
-      <td><div class="panel">Passenger Search</div></td>
+      <td><div class="panel" id="nothing">Location Search</div></td>
+      <td><div class="panel" id="nothing">Airplane Search</div></td>
+      <td><div class="panel" id="nothing">Passenger Search</div></td>
     </tr>
   </table>
 {% endblock %}

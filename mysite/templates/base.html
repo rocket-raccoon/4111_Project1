@@ -4,9 +4,15 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="/static/js/general.js"></script>
     <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/home_page.css">
+    {% block additionalJS %}{% endblock %}
     {% block additionalCSS %}{% endblock %}
   </head>
   <body>
+    <div class="home_banner">
+      <a href="/"><img src="/static/img/logo.png"></img></a>
+      {% block page_header %}{% endblock %}
+    </div>
     {% block content %}{% endblock %}   
   </body>
 </html>

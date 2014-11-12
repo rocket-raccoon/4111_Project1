@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Report an Accident!{% endblock %}
+{% block additionalCSS %} 
+    <link rel="stylesheet" href="/static/css/home_page.css">
+{% endblock %}
+{% block content %} 
+  <h3 class="home_header">Report an Accident</h3>
+  <p style="color:red;">Fields with asterisks are mandatory!</p>
+  <form> 
+  <table>
+    <tr>
+        <td><label>Report Number*</label></td>
+        <td><input name="reportNumber" type="text" placeholder="Enter report number"></td>
+    </tr>
+    <tr>
+        <td><label>Investigation Type</label></td>
+        <td>
+          <select name="investigationType">
+            <option>Accident</option>
+            <option>Incident</option>
+          </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Accident Number*</label></td>
+        <td><input name="accidentNumber" type="text" placeholder="Enter accident number"></td>
+    </tr>
+    <tr>
+        <td><label>Event Date (dd/mm/yyyy)*</label></td>
+        <td><input name="eventDate" type="text" placeholder="Enter date of accident"></td>
+    </tr>
+    <tr>
+        <td><label>Registration Number</label></td>
+        <td><input name="registrationNumber" type="text" placeholder="Enter registration number"></td>
+    </tr>
+    <tr>
+        <td><label>URL</label></td>
+        <td><input name="url" type="text" placeholder="Enter url to accident report"></td>
+    </tr>
+    <tr>
+        <td><label>Injury Severity*</label></td>
+        <td><input name="injurySeverity" type="text" placeholder="enter overall injury severity"></td>
+    </tr>
+     <tr>
+        <td><label>Aircraft Damage*</label></td>
+        <td><input name="aircraftDamage" type="text" placeholder="Enter overall aircraft damage"></td>
+    </tr>
+    <tr>
+        <td><label>Total Fatal*</label></td>
+        <td><input name="totalFatalInjuries" type="text" placeholder="Enter total fatalities"></td>
+    </tr>
+    <tr>
+        <td><label>Total Minor*</label></td>
+        <td><input name="totalMinorInjuries" type="text" placeholder="Enter total minor injuries"></td>
+    </tr>
+    <tr>
+        <td><label>Total Serious*</label></td>
+        <td><input name="totalSeriousInjuries" type="text" placeholder="Enter total serious injuries"></td>
+    </tr>
+    <tr>
+        <td><label>Total Uninjured*</label></td>
+        <td><input name="totalUninjured" type="text" placeholder="Enter total uninjured"></td>
+    </tr>
+    <tr>
+        <td><label>Aircraft Category*</label></td>
+        <td>
+            <select name="aircraftCategory">
+              {% for category in categories %}
+              <option>{{ category }}</option>
+              {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Amateur Built</label></td>
+        <td>
+            <select name="amateurBuilt">
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Make</label></td>
+        <td>
+            <select name="make">
+              {% for make in makes %}
+              <option>{{ make }}</option>
+              {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Model</label></td>
+        <td>
+            <select name="model">
+              {% for model in models %}
+              <option>{{ model }}</option>
+              {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Engine Type</label></td>
+        <td>
+            <select name="engineType">
+              {% for engine_type in engine_types %}
+              <option>{{ engine_type }}</option>
+              {% endfor %}
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label>Number of Engines</label></td>
+        <td>
+            <select name="numEngines">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+      <td><label>Airport Code</label></td>
+      <td><input name="airportCode" type="text" placeholder="Enter airport code"></input></td>
+    </tr>
+    <tr>
+      <td><label>Airport Name</label></td>
+      <td><input name="airportName" type="text" placeholder="Enter airport name"></input></td>
+    </tr>
+    <tr>
+      <td><label>Airline Name</label></td>
+      <td><input name="airportName" type="text" placeholder="Enter airport carrier name"></input></td>
+    </tr>
+    <tr>
+      <td><label>Corporate Owned?</label></td>
+      <td><select name="corporateOwned" type="text"><option>Yes</option><option>No</option></select></td>
+    </tr>
+    <tr>
+      <td><label>Purpose of Flight*</label></td>
+      <td><input name="purposeOfFlight" type="text" placeholder="Enter purpose of flight"></input></td>
+    </tr>
+    <tr>
+      <td><label>FAR Description</label></td>
+      <td><input name="farDescription" type="text" placeholder="Enter FAR description"></input></td>
+    </tr>
+    <tr>
+      <td><label>Schedule</label></td>
+      <td><input name="scheduled" type="text" placeholder="Enter schedule"></input></td>
+    </tr>
+    <tr>
+      <td><label>Weather Conditions</label></td>
+      <td><input name="weatherConditions" type="text" placeholder="Enter weather conditions"></input></td>
+    </tr>
+    <tr>
+      <td><label>Phase of Flight</label></td>
+      <td><input name="phaseOfFlight" type="text" placeholder="Enter phase of flight"></input></td>
+    </tr>
+    <tr>
+      <td><label>Latitude</label></td>
+      <td><input name="latitude" type="text" placeholder="Enter latitude"></input></td>
+    </tr>
+    <tr>
+      <td><label>Longitude</label></td>
+      <td><input name="longitude" type="text" placeholder="Enter longitude"></input></td>
+    </tr>
+    <tr>
+      <td><label>Place</label></td>
+      <td><input name="place" type="text" placeholder="Enter place"></input></td>
+    </tr>
+    <tr>
+      <td><label>City</label></td>
+      <td><input name="city" type="text" placeholder="Enter city"></input></td>
+    </tr>
+    <tr>
+      <td><label>State</label></td>
+      <td><input name="state" type="text" placeholder="Enter state"></input></td>
+    </tr>
+    <tr>
+      <td><label>Country*</label></td>
+      <td><input name="country" type="text" placeholder="Enter country"></input></td>
+    </tr>
+  </table>
+  <input type="submit"></input>
+</form>
+{% endblock %}
