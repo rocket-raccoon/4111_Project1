@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}NTSB PLANE CRASH WEB INTERFACE{% endblock %}
+{% block title %}Time Search Form{% endblock %}
 {% block additionalCSS %} 
     <link rel="stylesheet" href="/static/css/home_page.css">
 {% endblock %}
 {% block page_header %}
-  <h3 class="home_header">NTSB CRASH DATA INTERFACE</h3>
+  <h3 class="home_header">Time Search Form</h3>
 {% endblock %}
 {% block content %} 
   <img class="backdrop" src="/static/img/ntsb1.jpg"></img>
-  
   <div class="white_box">
+    <div class="white_box_contents">
     <p>Select a date to slice over!</p>
     <form action="/time_search_results" method="GET">
       <select name="year" class="form-control">
@@ -26,6 +26,7 @@
       <br>
       <input type="submit" value="Search">
     </form>
+    </div>
   </div>
 
 {% endblock %}

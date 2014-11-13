@@ -9,6 +9,7 @@
 {% block content %} 
   <img class="backdrop" src="/static/img/ntsb1.jpg"></img>
   <div class="white_box">
+    <div class="white_box_contents">
     <p>TIME SEARCH RESULTS</p>
     <table>
       <tr><td>Total Accidents</td><td>{{ total_accidents }}</td></td>
@@ -18,5 +19,6 @@
       <tr><td>Total Uninjured</td><td>{{ total_uninjured }}</td></tr>
     </table>
     <form action="/time_search_form"><input type="submit" value="Return"></input></form>
+    </div>
   </div>
 {% endblock %}

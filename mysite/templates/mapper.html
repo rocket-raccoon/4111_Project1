@@ -22,11 +22,9 @@
     
     {% for pair in coordinate_pairs %}
     var myLatlng = new google.maps.LatLng({{ pair.0 }}, {{ pair.1 }});
-    var marker = new google.maps.Marker({
-      position: myLatlng,
-      map: map,
-      title:"Hello World!"
-    });
+    var opts = {position: myLatlng, map: map, title: "Hello"};
+    opts.title = "{{ pair.2 }}";
+    var marker = new google.maps.Marker(opts);
     {% endfor %}
     
     if (isMobile) {
@@ -55,8 +53,22 @@
 {% endblock %}
 
 {% block content %}     
-    <img class="backdrop" src="/static/img/ntsb4.jpg"></img>
-    <div id="googft-mapCanvas"></div>  
+  <img class="backdrop" src="/static/img/ntsb4.jpg"></img>
+  <div id="googft-mapCanvas"></div>
+  <table class="mapper_buttons">
+    <tr>
+      <td>
+        <div class="mapper_button {%ifequal selection 'most_recent'%}selected{% endifequal %}">
+          <a href="/mapper?selection=most_recent">Most Recent</a>
+        </div>
+      </td>
+      <td>
+        <div class="mapper_button {%ifequal selection 'most_fatal'%}selected{% endifequal %}">
+          <a href="/mapper?selection=most_fatal">Most Fatal</a>
+        </div>
+      </td>
+    </tr>
+  </table>
 {% endblock %}
 
 

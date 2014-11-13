@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Airline Leaderboard{% endblock %}
+{% block additionalCSS %} 
+    <link rel="stylesheet" href="/static/css/home_page.css">
+{% endblock %}
+{% block page_header %}
+  <h3 class="home_header">Airline Leaderboard</h3>
+{% endblock %}
+{% block content %} 
+  <img class="backdrop" src="/static/img/ntsb1.jpg"></img>
+  <div class="leaderboard_content">
+    <div class="stats">
+      <div class="stat_panel {% ifequal stat 'totalFatalInjuries' %}selected{% endifequal %}">
+        <a href="/airline_leaderboard?stat=totalFatalInjuries">Fatalities</a>
+      </div>
+      <div class="stat_panel {% ifequal stat 'totalAccidents' %}selected{% endifequal %}">
+        <a href="/airline_leaderboard?stat=totalAccidents">Accidents</a>
+      </div>
+      <div class="stat_panel {% ifequal stat 'totalSeriousInjuries' %}selected{% endifequal %}">
+        <a href="/airline_leaderboard?stat=totalSeriousInjuries">Serious Injuries</a>
+      </div>
+      <div class="stat_panel {% ifequal stat 'totalMinorInjuries' %}selected{% endifequal %}">
+        <a href="/airline_leaderboard?stat=totalMinorInjuries">Minor Injuries</a>
+      </div>
+    </div>
+    <table class="leaderboard">
+      <tr><th>Count</th><th>Airline Name</th></tr>
+      {% for row in rows %}
+      <tr><td>{{ row.0 }}</td><td>{{ row.1 }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
+
+
+
+
+

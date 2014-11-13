@@ -1,11 +1,13 @@
+#Necessary imports
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
-from mapper.models import LatitudeLongitude
 from django.db import connection
 
-def hello(request):
+#Takes you to the home page
+def home_page(request):
     return render_to_response("home_page.html")
 
+#Takes you to a page where you can report a new aircraft accident
 def reporter(request):
     c = {}
     cursor = connection.cursor()
@@ -19,19 +21,32 @@ def reporter(request):
     c["engine_types"] = sorted([r[0] for r in cursor.fetchall()])    
     return render_to_response("reporter.html", c)
 
+#This will route the user to the mapper page
+#Depending on the get parameter, it will either display 100 most recent crash coordinates
+#or 100 most fatal crash coordinates via the google maps API
 def mapper(request):
+    selection = request.GET.get("selection")
+    selection = selection if selection else "most_recent" 
+    if selection == "most_recent": 
+        query = "SELECT latitude, longitude, eventDate FROM accident_report INNER JOIN tookPlaceAt ON accident_report.reportNumber = tookPlaceAt.reportNumber ORDER BY eventDate DESC LIMIT 100;"
+    elif selection == "most_fatal":
+        query = "SELECT latitude, longitude, totalFatalInjuries FROM accident_report INNER JOIN tookPlaceAt ON accident_report.reportNumber = tookPlaceAt.reportNumber ORDER BY totalFatalInjuries DESC LIMIT 100;"
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM latitude_longitude LIMIT 500;")
+    cursor.execute(query)
     results = cursor.fetchall()
-    context = {'coordinate_pairs': results}
+    results = [[r[0], r[1], str(r[2])] for r in results]
+    print results
+    context = {'coordinate_pairs': results, 'selection': selection}
     return render_to_response("mapper.html", context)
 
+#Form where users can select the month/year to search for stats on
 def time_search_form(request):
     c = {}
-    c["years"] = ["Select Year"] + range(1990, 2015)
+    c["years"] = ["Select Year"] + range(2002, 2015)
     c["months"] = ["Select Month","January","February","March","April","May","June","July","August","September","October","November","December"]
     return render_to_response("time_search_form.html", c)
 
+#Given a month and year, returns aggregate accident statistics for that period of time
 def time_search_results(request):
     
     #Given a month as a string, return the appropriate integer mapping
@@ -51,7 +66,6 @@ def time_search_results(request):
         else: return -1
     
     params = request.GET
-    print params
     month = int(month_to_int(params["month"]))
     year = int(params["year"]) if params["year"] != "Select Year" else -1
     cursor = connection.cursor()
@@ -72,6 +86,20 @@ def time_search_results(request):
     c["total_minor"] = results[3] if results[3] else 0
     c["total_uninjured"] = results[4] if results[4] else 0
     return render_to_response("time_search_results.html", c)
+
+def airline_leaderboard(request):
+    params = request.GET
+    stat = params["stat"] if params.get("stat") else "totalFatalInjuries"
+    if stat in ["totalFatalInjuries", "totalSeriousInjuries", "totalMinorInjuries"]:
+        query = "SELECT SUM(%s) AS total, airlineName FROM (SELECT %s, airlineName FROM (SELECT %s, aircraftID FROM accident_report JOIN involves ON accident_report.reportNumber=involves.reportNumber) AS A JOIN (SELECT owns.aircraftID, carrier.airlineName FROM owns JOIN carrier ON owns.carrierID=carrier.carrierID) AS B ON A.aircraftID=B.aircraftID) AS C GROUP BY airlineName ORDER BY total DESC LIMIT 25"%(stat, stat, stat)
+    else:
+        query = "SELECT COUNT(*) AS total, airlineName FROM (SELECT totalSeriousInjuries, airlineName FROM (SELECT totalSeriousInjuries, aircraftID FROM accident_report JOIN involves ON accident_report.reportNumber=involves.reportNumber) AS A JOIN (SELECT owns.aircraftID, carrier.airlineName FROM owns JOIN carrier ON owns.carrierID=carrier.carrierID) AS B ON A.aircraftID=B.aircraftID) AS C GROUP BY airlineName ORDER BY total DESC LIMIT 25"
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    c = {"rows": results, "stat": stat}
+    return render_to_response("airline_leaderboard.html", c)
+
 
 
 

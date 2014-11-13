@@ -52,7 +52,7 @@ DATABASES = {
         'NAME': 'cs4111',
         'USER': 'ab3980',
         'PASSWORD': 'coms4111',
-        'HOST': 'cs4111.c7k3p8wysxxv.us-west-2.RDS.amazonaws.com',
+        'HOST': 'project1.c7k3p8wysxxv.us-west-2.RDS.amazonaws.com',
         'PORT': '3306'
     }
 }
