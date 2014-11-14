@@ -100,6 +100,76 @@ def airline_leaderboard(request):
     c = {"rows": results, "stat": stat}
     return render_to_response("airline_leaderboard.html", c)
 
+#Takes user to a search form where they can view crash statistics by
+#both State and/or Country
+def location_search_form(request):
+    cursor = connection.cursor()
+    query = "SELECT DISTINCT state FROM location WHERE country='United States';"
+    cursor.execute(query)
+    states = sorted([r[0] for r in cursor.fetchall()])
+    query = "SELECT DISTINCT country FROM location;"
+    cursor.execute(query)
+    countries = sorted([r[0] for r in cursor.fetchall()])
+    c = {"states": states, "countries": countries}
+    return render_to_response("location_search_form.html", c)
+
+#Given a city or state, return the summary statistics for crashes in that area
+def location_search_results(request):
+    params = request.GET
+    state, country = params["state"], params["country"]
+    if state:
+        query = "SELECT COUNT(*), SUM(totalFatalInjuries), SUM(totalMinorInjuries), SUM(totalSeriousInjuries), SUM(totalUninjured) FROM accident_report, location, occuredIn WHERE accident_report.reportNumber = occuredIn.reportNumber AND occuredIn.locationID = location.locationID AND location.state = '%s';"%(state)
+    else:
+        query = "SELECT COUNT(*), SUM(totalFatalInjuries), SUM(totalMinorInjuries), SUM(totalSeriousInjuries), SUM(totalUninjured) FROM accident_report, location, occuredIn WHERE accident_report.reportNumber = occuredIn.reportNumber AND occuredIn.locationID = location.locationID AND location.country = '%s';"%(country)
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()[0]
+    c = {}
+    c["total_accidents"] = results[0] if results[0] else 0
+    c["total_fatal"] = results[1] if results[1] else 0
+    c["total_serious"] = results[2] if results[2] else 0
+    c["total_minor"] = results[3] if results[3] else 0
+    c["total_uninjured"] = results[4] if results[4] else 0
+    return render_to_response("location_search_results.html", c)
+
+#Provides the user with details about the flight environments surrounding crashes
+def flight_environment(request):
+    #Some entries are listed as blank, some as unknown in the database
+    #Combine these into one
+    def combine_blank_and_unknown(results):
+        #Convert from tuple to list
+        results = [list(r) for r in results]
+        #First, give the blank and unknown groups the same label
+        for result in results:
+            if result[0].lower()=="unknown" or result[0]=='':
+                result[0] = "UNKNOWN"            
+        #Get the sum for these two groups
+        count = sum([r[1] for r in results if r[0] == "UNKNOWN"])        
+        #Splice them out of the original result set
+        results = [r for r in results if r[0] != "UNKNOWN" and r[0] != '']
+        return results + [["UNKNOWN", count]]
+    
+    def get_detail_name(detail):
+        if detail == "purposeOfFlight": return "Purpose Of Flight"
+        elif detail == "weatherConditions": return "Weather Conditions"
+        elif detail == "phaseOfFlight": return "Phase of Flight"
+    
+    context = {}
+    cursor = connection.cursor()
+    params = request.GET
+    detail = "purposeOfFlight" if not params.get("detail") else params["detail"]
+    query = "SELECT %s, COUNT(*) FROM flight_environment GROUP BY %s;"%(detail, detail)
+    cursor.execute(query)
+    results = cursor.fetchall()
+    results = combine_blank_and_unknown(results)
+    context["details"] = results
+    context["detail_name"] = get_detail_name(detail)
+    return render_to_response("flight_environment.html", context)
+
+
+
+
+
 
 
 

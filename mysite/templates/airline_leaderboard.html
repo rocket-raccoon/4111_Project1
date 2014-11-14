@@ -23,12 +23,14 @@
         <a href="/airline_leaderboard?stat=totalMinorInjuries">Minor Injuries</a>
       </div>
     </div>
-    <table class="leaderboard">
-      <tr><th>Count</th><th>Airline Name</th></tr>
-      {% for row in rows %}
-      <tr><td>{{ row.0 }}</td><td>{{ row.1 }}</td></tr>
-      {% endfor %}
-    </table>
+    <div class="flight_environment_body">
+      <table class="table">
+        <tr><th>Count</th><th>Airline Name</th></tr>
+        {% for row in rows %}
+        <tr><td>{{ row.0 }}</td><td>{{ row.1 }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
   </div>
 {% endblock %}
 

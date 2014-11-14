@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Flight Environment Details{% endblock %}
+{% block additionalCSS %} 
+    <link rel="stylesheet" href="/static/css/home_page.css">
+{% endblock %}
+{% block page_header %}
+  <h3 class="home_header">Flight Environment Details</h3>
+{% endblock %}
+{% block content %} 
+  <img class="backdrop" src="/static/img/ntsb1.jpg"></img> 
+  
+  <div class="stats">
+    <div class="stat_panel {% ifequal detail_name 'Purpose Of Flight' %}selected{% endifequal %}">
+      <a href="/flight_environment?detail=purposeOfFlight">Purpose Of Flight</a>
+    </div>
+    <div class="stat_panel {% ifequal detail_name 'Weather Conditions' %}selected{% endifequal %}">
+      <a href="/flight_environment?detail=weatherConditions">Weather Conditions</a>
+    </div>
+    <div class="stat_panel {% ifequal detail_name 'Phase of Flight' %}selected{% endifequal %}">
+      <a href="/flight_environment?detail=phaseOfFlight">Phase Of Flight</a>
+    </div>
+  </div>
+  
+  <div class="flight_environment_body">
+    <h1>{{ detail_name }}</h1>
+    <table class="table">
+      <tr><th>Name</th><th>Number of Accidents</th>
+      {% for row in details %}
+        <tr><td>{{ row.0 }}</td><td>{{ row.1 }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
