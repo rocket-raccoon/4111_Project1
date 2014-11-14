@@ -4,9 +4,11 @@
     <link rel="stylesheet" href="/static/css/home_page.css">
 {% endblock %}
 {% block content %} 
-  <h3 class="home_header">Report an Accident</h3>
+  <img class="backdrop" src="/static/img/ntsb1.jpg"></img>
+  <div class="flight_environment_body">
+  <h3>Report an Accident</h3>
   <p style="color:red;">Fields with asterisks are mandatory!</p>
-  <form> 
+  <form action="/submission_results/" method="POST"> 
   <table>
     <tr>
         <td><label>Report Number*</label></td>
@@ -26,7 +28,7 @@
         <td><input name="accidentNumber" type="text" placeholder="Enter accident number"></td>
     </tr>
     <tr>
-        <td><label>Event Date (dd/mm/yyyy)*</label></td>
+        <td><label>Event Date (mm/dd/yyyy)*</label></td>
         <td><input name="eventDate" type="text" placeholder="Enter date of accident"></td>
     </tr>
     <tr>
@@ -135,7 +137,7 @@
     </tr>
     <tr>
       <td><label>Airline Name</label></td>
-      <td><input name="airportName" type="text" placeholder="Enter airport carrier name"></input></td>
+      <td><input name="airlineName" type="text" placeholder="Enter airport carrier name"></input></td>
     </tr>
     <tr>
       <td><label>Corporate Owned?</label></td>
@@ -188,4 +190,5 @@
   </table>
   <input type="submit"></input>
 </form>
+</div>
 {% endblock %}

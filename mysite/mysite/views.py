@@ -2,6 +2,7 @@
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.db import connection
+from datetime import datetime
 
 #Takes you to the home page
 def home_page(request):
@@ -166,14 +167,118 @@ def flight_environment(request):
     context["detail_name"] = get_detail_name(detail)
     return render_to_response("flight_environment.html", context)
 
-
-
-
-
-
-
-
-
-
-
+#Given the post parameters from the report an accident form,
+#this view verifies all the necessary fields are set and updates the database
+def submission_results(request):
+    params = request.POST
+    c = connection.cursor()
+    context = {}
+    try:
+        #First, fill out the aircraft entity
+        c.execute("SELECT MAX(aircraftID) FROM aircraft;")
+        aircraftID = c.fetchall()[0][0] + 1
+        aircraftCategory = params["aircraftCategory"]
+        amateurBuilt = 0 if params["amateurBuilt"] == "YES" else 1
+        make = params["make"]
+        model = params["model"]
+        engineType = params["engineType"]
+        numEngines = params["numEngines"]
+        aircraft = (aircraftCategory, amateurBuilt, aircraftID, make, model, engineType, numEngines)
+        query = '''INSERT INTO aircraft (aircraftCategory,amateurBuilt,aircraftID,make,model,engineType,numEngines) VALUES ("%s","%s","%s","%s","%s","%s","%s")'''%aircraft
+        c.execute(query)
+        #Get the carrier entity
+        airlineName = params["airlineName"]
+        corporateOwned = params["corporateOwned"]
+        carrierID = None
+        if airlineName:
+            c.execute("SELECT MAX(carrierID) FROM carrier")
+            carrierID = c.fetchall()[0][0] + 1
+            carrier = (carrierID, airlineName, corporateOwned)
+            query = '''INSERT INTO carrier (carrierID, airlineName, corporateOwned) VALUES ("%s","%s",%s)'''%carrier
+            c.execute(query)
+        #Get the airport entity
+        airportCode = params["airportCode"]
+        airportName = params["airportName"]
+        if airportCode:
+            airport = (airportCode, airportName)
+            query = '''INSERT IGNORE INTO airport(airportCode, airportName) VALUES ("%s","%s")'''%airport
+            c.execute(query)
+        #Get the latitude_longitude
+        latitude = params["latitude"]
+        longitude = params["longitude"]
+        if latitude and longitude:
+            query = '''INSERT IGNORE INTO latitude_longitude(latitude,longitude) VALUES ("%s", "%s")'''%(latitude, longitude)
+            c.execute(query)
+        #Get the flight environment entity
+        purposeFlight = params["purposeOfFlight"]
+        farDescription = params["farDescription"]
+        scheduled = params["scheduled"]
+        weatherConditions = params["weatherConditions"]
+        phaseOfFlight = params["phaseOfFlight"]
+        c.execute("SELECT MAX(environmentID) FROM flight_environment;")
+        environmentID = c.fetchall()[0][0]+1
+        flight_environment = (environmentID, purposeFlight, farDescription, scheduled, weatherConditions, phaseOfFlight)
+        query = 'INSERT INTO flight_environment (environmentID,purposeOfFlight,farDescription,scheduled,weatherConditions,phaseOfFlight) VALUES ("%s","%s","%s","%s","%s","%s");'%flight_environment
+        c.execute(query)
+        #Get the location entity
+        city = params["city"]
+        state = params["state"]
+        country = params["country"]
+        place = params["place"]
+        c.execute("SELECT MAX(locationID) FROM location;")
+        locationID = c.fetchall()[0][0]+1
+        if city or state or place or country:
+            location = (locationID, place, city, state, country)
+            query='''INSERT INTO location (locationID, place, city, state, country) VALUES ("%s","%s","%s","%s","%s")'''%location
+            c.execute(query)
+        #Create the flight_accident entity
+        reportNumber = params["reportNumber"]
+        iType = params["investigationType"]
+        accNum = params["accidentNumber"]
+        eventDate = datetime.strptime(params["eventDate"], "%m/%d/%Y").strftime("%Y-%m-%d")
+        regNum = params["registrationNumber"]
+        url = params["url"]
+        injSev = params["injurySeverity"]
+        acDamage = params["aircraftDamage"]
+        totalFatal = params["totalFatalInjuries"]
+        totalSerious = params["totalSeriousInjuries"]
+        totalMinor = params["totalMinorInjuries"]
+        totalUninj = params["totalUninjured"]
+        accident_report = (reportNumber,iType,accNum,eventDate,regNum,url,injSev,acDamage,totalFatal,totalSerious,totalMinor,totalUninj)
+        query = '''INSERT IGNORE INTO accident_report (reportNumber,investigationType,accidentNumber,eventDate,registrationNumber,url,injurySeverity,aircraftDamage,totalFatalInjuries,totalSeriousInjuries,totalMinorInjuries,totalUninjured) VALUES ("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")'''%accident_report
+        c.execute(query)
+        #Get the owns relationship set
+        if carrierID:
+            owns = (aircraftID, carrierID)
+            query = '''INSERT INTO owns (aircraftID, carrierID) VALUES ("%s", "%s")'''%owns
+            c.execute(query)
+        #Get the flownIn relationship set
+        flownIn = (reportNumber, environmentID)
+        query = '''INSERT INTO flownIn (reportNumber, environmentID) VALUES ("%s", "%s")'''%flownIn
+        c.execute(query)
+        #Get the tookPlaceAt relationship set
+        if(latitude and longitude):
+            tookPlaceAt = (reportNumber, latitude, longitude)
+            query = '''INSERT IGNORE INTO tookPlaceAt (reportNumber, latitude, longitude) VALUES ("%s","%s","%s")'''%tookPlaceAt
+            c.execute(query)
+        #Get the occuredIn relationship set
+        occuredIn = (reportNumber, locationID)
+        query = '''INSERT INTO occuredIn (reportNumber, locationID) VALUES ("%s","%s")'''%occuredIn
+        c.execute(query)
+        #Get the involves relationship set
+        involves = (reportNumber, aircraftID)
+        query = '''INSERT INTO involves (reportNumber, aircraftID) VALUES ("%s","%s")'''%involves
+        c.execute(query)
+        #Get the hasAirport relationship set
+        if(city or state or place or country) and airportCode:
+            hasAirport = (locationID, airportCode)
+            query = '''INSERT INTO hasAirport (locationID, airportCode) VALUES ("%s","%s")'''%hasAirport
+            c.execute(query)
+        #Commit the changes
+        c.db.commit()
+        context["Message"] = "Your accident has been successfully reported"
+        return render_to_response("submission_results.html", context)   
+    except:
+        context["Message"] = "Oops.  Something went wrong.  Perhaps a data entry error?"
+        return render_to_response("submission_results.html", context)
 
